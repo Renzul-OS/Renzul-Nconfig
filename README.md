@@ -1,0 +1,23 @@
+# Nvims Renzul-OS Neovim config 
+Legend
+    {-i } = installed
+To-do List
+--Referenced using the Awesome Neovim repo
+
+1. Plugin Mananger
+    Use lazy nvim[-i] it works
+        [X]Each plugin has its own config file + keybinds + opts file
+    try paq.nvim or dep, vim-plug
+2. []Buffer tabs,Pane Mg,
+3. []Colorscheme, Status bar
+4. []Floating md file tabs
+5. []File tree,web,md, Pdf previewer 
+    Oil nvim {-i}- config on init.lua
+        [X]Ill try to change it into its own folder
+6. []Lsp & Databse mg system
+    Webdev, Markdown & latex
+    []syntax-treesitter
+    []snippets
+    []Register
+    [] Auto completion
+    

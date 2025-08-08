@@ -1,34 +1,40 @@
 --Config verification text
-print("Hello mom -This is the test init.lua file")
-
+print("Hello mom")
+--Module requires
+--Problematic configs .lua files
+--require('genKeyBinds')
+--require('genOpts')
+require('pluginKeyBinds')
+require('pluginOpts')
 
 --Plugin install
 require('config.lazy')
-
---Keymappings
-vim.keymap.set('n','<space><space>x','<cmd> source %<CR>')
-vim.keymap.set('n','<space>x',':.lua<CR>')
-vim.keymap.set('v','<space>x',':lua<CR>')
-
---Highight yanking text
-vim.api.nvim_create_autocmd('TextYankPost',{
-    desc ='highlight when yanking (copying) text',
-    group = vim.api.nvim_create_augroup('kickstart-highlight-yank',{clear = true}),
-    callback = function()
-        vim.highlight.on_yank()
-    end,
+require('oil').setup({
+	default_file_explorer= true,
 })
---Win32 yank config
+--require('wezterm-config').setup()
+--require('easypick').setup()
+--Leader Key map-Space Bar
+vim.g.mapleader = ' '
+vim.g.maplocalleader ='\\'
+--General Keybinds
+	--Buffer navigation
+vim.keymap.set({'n','v'},'<leader>n',':bn<CR>')
+vim.keymap.set({'n','v'},'<leader>p',':bp<CR>')
+vim.keymap.set({'n','v'},'<leader>x',':bf<CR>')
+	--Yank Keymaps
+vim.keymap.set({'n','v'},'<leader>y','"+y<CR>')
+vim.keymap.set({'n','v'},'<leader>d','"+d<CR>')
+	--Quit buffer
+vim.keymap.set({'n','v'},'<leader>Q',':q<CR>')
+	--Save Buffer
+vim.keymap.set({'n','v'},'<leader>s',':w!<CR>')
+	--Source Buffer
+vim.keymap.set({'n','v'},'<leader>R',':so<CR>')
 
-vim.g.clipboard = {
-		name = "win32yank-wsl",
-		copy = {
-				["+"] ="win32yank.exe -i --crlf",
-				["*"] ="win32yank.exe -i --crlf",
-		},
-		paste ={
-				["+"] ="win32yank.exe -o --lf",
-				["*"] ="win32yank.exe -o --lf",
-		},
-		cache_enabled = true,
-}
+--General opt functions
+	--Line Numbers
+vim.opt.nu = true -- line Numbers
+vim.opt.relativenumber = true --relative line 
+
+
