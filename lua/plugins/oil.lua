@@ -7,4 +7,5 @@ return{
 --No lazy loarding to avoid conflicts
   lazy = false,
   default_file_explorer= true,
+
 }
