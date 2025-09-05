@@ -1,0 +1,6 @@
+//Vim dadbod db connections can use Enviroment varibales as connetctions
+
+vim.g.dbs={
+   prod = "mysql://user:password@localhosts:3306/dev_db?param=value",
+   dev = vim.env.DB_dev(From enviroment variables)
+}

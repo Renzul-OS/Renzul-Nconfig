@@ -7,9 +7,9 @@ vim.opt.scrolloff = 10                             -- Keep 10 lines above/below 
 vim.opt.sidescrolloff = 8                          -- Keep 8 columns left/right of cursor
 
 -- Indentation
-vim.opt.tabstop = 2                                -- Tab width
-vim.opt.shiftwidth = 2                             -- Indent width
-vim.opt.softtabstop = 2                            -- Soft tab stop
+vim.opt.tabstop = 3                                -- Tab width
+vim.opt.shiftwidth = 3                             -- Indent width
+vim.opt.softtabstop = 3                            -- Soft tab stop
 vim.opt.expandtab = true                           -- Use spaces instead of tabs
 vim.opt.smartindent = true                         -- Smart auto-indenting
 vim.opt.autoindent = true                          -- Copy indent from current line
@@ -42,10 +42,10 @@ vim.opt.backup = false                             -- Don't create backup files
 vim.opt.writebackup = false                        -- Don't create backup before writing
 vim.opt.swapfile = false                           -- Don't create swap files
 vim.opt.undofile = true                            -- Persistent undo
---vim.opt.undodir = vim.fn.expand("~/.vim/undodir")  -- Undo directory
+vim.opt.undodir = vim.fn.expand("~/.vim/undodir")  -- Undo directory
 vim.opt.updatetime = 250                           -- Faster completion
---vim.opt.timeoutlen = 500                           -- Key timeout duration
---vim.opt.ttimeoutlen = 0                            -- Key code timeout
+vim.opt.timeoutlen = 500                           -- Key timeout duration
+vim.opt.ttimeoutlen = 100                            -- Key code timeout
 vim.opt.autoread = true                            -- Auto reload files changed outside vim
 vim.opt.autowrite = false                          -- Don't auto save
 
@@ -77,6 +77,8 @@ vim.opt.splitright = true                          -- Vertical splits go right
 -- Key mappings
 vim.g.mapleader = " "                              -- Set leader key to space
 vim.g.maplocalleader = "\\"                         -- Set local leader key (NEW)
+--SAVE cursor position
+local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
 -- Copy Full File-Path
 vim.keymap.set("n", "<leader>pa", function()
@@ -84,4 +86,71 @@ vim.keymap.set("n", "<leader>pa", function()
 	vim.fn.setreg("+", path)
 	print("file:", path)
 end)
+--Highlight on Yank
+vim.api.nvim_create_autocmd("TextYankPost",{
+   desc  = "Highlight on yank",
+   group = vim.api.nvim_create_augroup("kickstart-highlight-yank",{clear = true}),
+   callback= function()
+      vim.highlight.on_yank()
+   end,
+   })
+-- Create undo directory if it doesn't exist
+local undodir = vim.fn.expand("~/.vim/undodir")
+if vim.fn.isdirectory(undodir) == 0 then
+  vim.fn.mkdir(undodir, "p")
+end
+--Tab Navigation And Keymaps
+local function open_file_in_tab()
+  vim.ui.input({ prompt = 'File to open in new tab: ', completion = 'file' }, function(input)
+    if input and input ~= '' then
+      vim.cmd('tabnew ' .. input)
+    end
+  end)
+end
 
+-- Function to duplicate current tab
+local function duplicate_tab()
+  local current_file = vim.fn.expand('%:p')
+  if current_file ~= '' then
+    vim.cmd('tabnew ' .. current_file)
+  else
+    vim.cmd('tabnew')
+  end
+end
+
+-- Function to close tabs to the right
+local function close_tabs_right()
+  local current_tab = vim.fn.tabpagenr()
+  local last_tab = vim.fn.tabpagenr('$')
+
+  for i = last_tab, current_tab + 1, -1 do
+    vim.cmd(i .. 'tabclose')
+  end
+end
+
+-- Function to close tabs to the left
+local function close_tabs_left()
+  local current_tab = vim.fn.tabpagenr()
+
+  for i = current_tab - 1, 1, -1 do
+    vim.cmd('1tabclose')
+  end
+end
+
+-- Enhanced keybindings
+vim.keymap.set('n', '<leader>tO', open_file_in_tab, { desc = 'Open file in new tab' })
+vim.keymap.set('n', '<leader>td', duplicate_tab, { desc = 'Duplicate current tab' })
+vim.keymap.set('n', '<leader>tr', close_tabs_right, { desc = 'Close tabs to the right' })
+vim.keymap.set('n', '<leader>tL', close_tabs_left, { desc = 'Close tabs to the left' })
+
+-- Function to close buffer but keep tab if it's the only buffer in tab
+local function smart_close_buffer()
+  local buffers_in_tab = #vim.fn.tabpagebuflist()
+  if buffers_in_tab > 1 then
+    vim.cmd('bdelete')
+  else
+    -- If it's the only buffer in tab, close the tab
+    vim.cmd('tabclose')
+  end
+end
+vim.keymap.set('n', '<leader>bd', smart_close_buffer, { desc = 'Smart close buffer/tab' })
